@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power BI Embedded</title>
+    <!-- Load the Power BI Client Library -->
+    <script src="{{ url_for('static', filename='js/powerbi.min.js') }}"></script>
+    <style>
+        .report-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Embedded Power BI Report</h1>
+    <div id="reportContainer" class="report-container"></div>
+    <script>
+      console.log("Power BI Library Loaded:", window["powerbi-client"]);
+    </script>
+    <script>
+      (function() {
+          // Ensure the Power BI Client Library is loaded
+          if (!window["powerbi-client"]) {
+              console.error("Power BI Client Library is not loaded!");
+              return;
+          }
+  
+          const reportContainer = document.getElementById("reportContainer");
+          const embedUrl = "{{ embed_url }}";
+          const accessToken = "{{ access_token }}";
+          const embedReportId = "{{ report_id }}";
+  
+          const models = window["powerbi-client"].models;
+          const config = {
+              type: 'report',
+              tokenType: models.TokenType.Embed,
+              accessToken: accessToken,
+              embedUrl: embedUrl,
+              id: embedReportId,
+              settings: {
+                  filterPaneEnabled: false,
+                  navContentPaneEnabled: false
+              }
+          };
+  
+          // Embed the report and display it within the div container.
+          window.powerbi.embed(reportContainer, config);
+      })();
+    </script>
+</body>
+</html>
