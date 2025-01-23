@@ -32,12 +32,13 @@
           const embedUrl = "{{ embed_url }}";
           const accessToken = "{{ access_token }}";
           const embedReportId = "{{ report_id }}";
+          const embedToken = "{{ embed_token }}";
   
           const models = window["powerbi-client"].models;
           const config = {
               type: 'report',
               tokenType: models.TokenType.Embed,
-              accessToken: accessToken,
+              accessToken: embedToken,
               embedUrl: embedUrl,
               id: embedReportId,
               settings: {
