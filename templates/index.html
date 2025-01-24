@@ -11,19 +11,25 @@
             width: 100%;
             height: 600px;
             border: 1px solid #ccc;
+            display: none;
         }
-        .navigation-buttons {
-            margin-top: 10px;
+        .page-thumbnail {
+            width: 200px;
+            height: 150px;
+            border: 1px solid #ccc;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
         }
     </style>
 </head>
 <body>
     <h1>Embedded Power BI Report</h1>
+    <div id="gridContainer" class="grid-container"></div>
     <div id="reportContainer" class="report-container"></div>
-    <div class="navigation-buttons">
-        <button onclick="goToPreviousPage()">Previous Page</button>
-        <button onclick="goToNextPage()">Next Page</button>
-    </div>
     <script>
       console.log("Power BI Library Loaded:", window["powerbi-client"]);
     </script>
@@ -36,6 +42,7 @@
           }
   
           const reportContainer = document.getElementById("reportContainer");
+          const gridContainer = document.getElementById("gridContainer");
           const embedUrl = "{{ embed_url }}";
           const embedToken = "{{ embed_token }}";
           const reportId = "{{ report_id }}";
@@ -53,7 +60,7 @@
                           visible: false
                       },
                       pageNavigation: {
-                          visible: true
+                          visible: false
                       }
                   }
               }
@@ -61,23 +68,20 @@
   
           const report = window.powerbi.embed(reportContainer, config);
   
-          window.goToPreviousPage = function() {
+          report.on("loaded", function() {
               report.getPages().then(pages => {
-                  const currentPageIndex = pages.findIndex(page => page.isActive);
-                  if (currentPageIndex > 0) {
-                      pages[currentPageIndex - 1].setActive();
-                  }
+                  pages.forEach(page => {
+                      const thumbnail = document.createElement("div");
+                      thumbnail.className = "page-thumbnail";
+                      thumbnail.innerText = page.displayName;
+                      thumbnail.onclick = function() {
+                          reportContainer.style.display = "block";
+                          page.setActive();
+                      };
+                      gridContainer.appendChild(thumbnail);
+                  });
               });
-          };
-  
-          window.goToNextPage = function() {
-              report.getPages().then(pages => {
-                  const currentPageIndex = pages.findIndex(page => page.isActive);
-                  if (currentPageIndex < pages.length - 1) {
-                      pages[currentPageIndex + 1].setActive();
-                  }
-              });
-          };
+          });
       })();
     </script>
 </body>
