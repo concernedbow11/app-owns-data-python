@@ -40,7 +40,7 @@ def get_embed_token():
     access_token = get_access_token()
 
     # API URL to generate an embed token
-    url = f"{POWER_BI_API}/groups/{WORKSPACE_ID}/reports/{REPORT_ID}/GenerateToken"
+    url = f"{POWER_BI_API}/groups/{WORKSPACE_ID}/dashboards/{REPORT_ID}/GenerateToken"
 
     headers = {"Authorization": f"Bearer {access_token}"}
     body = {"accessLevel": "view"}
@@ -65,7 +65,7 @@ def home():
         
 
         # API to get report details
-        report_url = f"{POWER_BI_API}/groups/{WORKSPACE_ID}/reports/{REPORT_ID}"
+        report_url = f"{POWER_BI_API}/groups/{WORKSPACE_ID}/dashboards/{REPORT_ID}"
         access_token = get_access_token()
         headers = {"Authorization": f"Bearer {access_token}"}
         report_response = requests.get(report_url, headers=headers)
