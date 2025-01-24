@@ -12,11 +12,18 @@
             height: 600px;
             border: 1px solid #ccc;
         }
+        .navigation-buttons {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Embedded Power BI Report</h1>
     <div id="reportContainer" class="report-container"></div>
+    <div class="navigation-buttons">
+        <button onclick="goToPreviousPage()">Previous Page</button>
+        <button onclick="goToNextPage()">Next Page</button>
+    </div>
     <script>
       console.log("Power BI Library Loaded:", window["powerbi-client"]);
     </script>
@@ -30,9 +37,8 @@
   
           const reportContainer = document.getElementById("reportContainer");
           const embedUrl = "{{ embed_url }}";
-          const accessToken = "{{ access_token }}";
-          const embedReportId = "{{ report_id }}";
           const embedToken = "{{ embed_token }}";
+          const reportId = "{{ report_id }}";
   
           const models = window["powerbi-client"].models;
           const config = {
@@ -40,15 +46,38 @@
               tokenType: models.TokenType.Embed,
               accessToken: embedToken,
               embedUrl: embedUrl,
-              id: embedReportId,
+              id: reportId,
               settings: {
-                  filterPaneEnabled: false,
-                  navContentPaneEnabled: false
+                  panes: {
+                      filters: {
+                          visible: false
+                      },
+                      pageNavigation: {
+                          visible: true
+                      }
+                  }
               }
           };
   
-          // Embed the report and display it within the div container.
-          window.powerbi.embed(reportContainer, config);
+          const report = window.powerbi.embed(reportContainer, config);
+  
+          window.goToPreviousPage = function() {
+              report.getPages().then(pages => {
+                  const currentPageIndex = pages.findIndex(page => page.isActive);
+                  if (currentPageIndex > 0) {
+                      pages[currentPageIndex - 1].setActive();
+                  }
+              });
+          };
+  
+          window.goToNextPage = function() {
+              report.getPages().then(pages => {
+                  const currentPageIndex = pages.findIndex(page => page.isActive);
+                  if (currentPageIndex < pages.length - 1) {
+                      pages[currentPageIndex + 1].setActive();
+                  }
+              });
+          };
       })();
     </script>
 </body>
